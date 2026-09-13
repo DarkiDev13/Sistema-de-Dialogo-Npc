@@ -1,0 +1,11 @@
+local Effects = {}
+
+function Effects:TypeWritter(text: string, textLabel: TextLabel, speed: number)
+	for i = 1, #text do
+		local letter = string.sub(text, 1, i)
+		textLabel.Text = letter
+		task.wait(speed)
+	end
+end
+
+return Effects

@@ -1,0 +1,5 @@
+return {
+	["TalkNpc"] = {
+		Dialogo = "Hey!, Bienvenido a mi juego disfruta del ambiente.",
+	},
+}

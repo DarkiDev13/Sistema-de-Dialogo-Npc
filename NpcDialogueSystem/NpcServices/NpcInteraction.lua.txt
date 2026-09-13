@@ -1,0 +1,43 @@
+local ProximityPromptService = game:GetService("ProximityPromptService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+local Utils = ReplicatedStorage.Utils
+local NpcsData = Utils.NpcsData
+local DataNpcStorage = require(NpcsData.Data) 
+
+local Remotes = ReplicatedStorage.Remotes
+local NpcRemotes = Remotes.Npc
+
+local DialogandoRemote = NpcRemotes.Dialogando
+
+local IsDialoguing = false
+
+ProximityPromptService.PromptTriggered:Connect(function(proximity, player)
+	if IsDialoguing then
+		return
+	end
+	
+	if not player then
+		return
+	end
+	
+	if not proximity then
+		return
+	end
+	IsDialoguing = true
+	
+	local NpcModel = proximity:FindFirstAncestorOfClass("Model")
+	
+	local NpcModelData = DataNpcStorage[NpcModel.Name]
+	
+	player:SetAttribute("IsDialoguing", true)
+	
+	local choose = DialogandoRemote:InvokeClient(player, NpcModel, NpcModelData)
+	if choose then
+		player:SetAttribute("IsDialoguing", nil)
+	else
+		player:SetAttribute("IsDialoguing", nil)
+	end
+	IsDialoguing = false
+end)

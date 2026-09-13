@@ -1,0 +1,131 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local MyInfoTween = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+
+local Utils = ReplicatedStorage:WaitForChild("Utils")
+
+local GUIFX = require(Utils.GUIFX)
+
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+local NpcRemotes = Remotes:WaitForChild("Npc")
+
+local DialogandoRemote = NpcRemotes:WaitForChild("Dialogando")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player.PlayerGui
+
+local DialogueGui = PlayerGui:WaitForChild("Dialogue")
+local RootFrame = DialogueGui:WaitForChild("Root")
+RootFrame.Visible = false
+RootFrame.Position = UDim2.fromScale(0.5, 1.5)
+
+local DialogueTexter = RootFrame:WaitForChild("DialogueTexter")
+local NpcView = RootFrame:WaitForChild("NpcView")
+
+local BtnAccept = RootFrame:WaitForChild("BtnAccept")
+local BtnClose = RootFrame:WaitForChild("BtnClose")
+
+local NpcCloned
+local camera
+
+local ViewFrame = TweenService:Create(RootFrame, MyInfoTween, {Position = UDim2.fromScale(0.5, 0.9)})
+local CloseFrame = TweenService:Create(RootFrame, MyInfoTween, {Position = UDim2.fromScale(0.5, 1.5)})
+
+local function CerraGUI()
+	CloseFrame:Play()
+	CloseFrame.Completed:Wait()
+	RootFrame.Visible = false
+	NpcCloned:Destroy()
+	camera:Destroy()
+end
+
+local function AbrirGUI()
+	RootFrame.Visible = true
+	ViewFrame:Play()
+end
+
+local function ConfigurarGUI(accion: string, npcModel: Model)
+	if not accion then
+		return
+	end
+	
+	if not npcModel then
+		return
+	end
+	
+	
+	local function ConfigurarCamara()
+		NpcCloned = npcModel:Clone()
+		NpcCloned.Parent = NpcView
+		NpcCloned:PivotTo(CFrame.new(0, 0, 0))
+		
+		camera = Instance.new("Camera")
+		camera.Parent = NpcView
+		camera.CFrame = CFrame.new(0, 4, -3) * CFrame.Angles(0, math.rad(180), 0)
+		camera.CameraSubject = NpcCloned
+		
+		NpcView.CurrentCamera = camera
+	end
+
+	if accion == "abrir" then
+		AbrirGUI()
+		ConfigurarCamara()
+	elseif accion == "cerrar" then
+		CerraGUI()
+	end
+end
+
+local function ConfigurarBotones()
+	BtnAccept.Visible = true
+	BtnClose.Visible = true
+	
+	local answer = nil
+	
+	BtnAccept.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			print("Gracias!")
+			answer = true
+			CerraGUI()
+		end
+	end)
+	BtnClose.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			print("Adios!")
+			BtnClose.Visible = false
+			BtnAccept.Visible = false
+			CerraGUI()
+			answer = false
+		end
+	end)
+	while answer == nil do
+		task.wait(0.1)
+	end
+	
+	return answer
+end
+
+local function Dialogar(data, npcModel)
+	if not data then
+		return
+	end
+	GUIFX:TypeWritter(data.Dialogo, DialogueTexter, 0.05)
+	
+	
+	return ConfigurarBotones()
+end
+
+DialogandoRemote.OnClientInvoke = function(NpcModel, npcData)
+	if not NpcModel then
+		return
+	end
+	
+	if not npcData then
+		return
+	end
+	
+	ConfigurarGUI("abrir", NpcModel)
+	
+	return Dialogar(npcData, NpcModel)
+end

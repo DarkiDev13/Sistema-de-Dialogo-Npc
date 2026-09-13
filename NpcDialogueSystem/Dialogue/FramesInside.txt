@@ -1,0 +1,42 @@
+Root: Frame 
+ [Position: {0.5, 0}, {1.5, 0}
+ AnchorPoint: 0.5, 0.899999976
+ BackgroundColor3: 0.101961, 0.101961, 0.101961
+ Size: {0, 750}, {0, 250} BackgroundTransparency: 0.20000000298023224
+]
+NpcView: ViewportFrame 
+ [Position: {0.0500000007, 0}, {0.5, 0}
+ AnchorPoint: 0.0500000007, 0.5
+ BackgroundColor3: 0.639216, 0.639216, 0.639216
+ Size: {0.25, 0}, {0.699999988, 0} BackgroundTransparency: 0
+]
+DialogueTexter: TextLabel 
+ [Position: {0.949999988, 0}, {0.5, 0}
+ AnchorPoint: 0.949999988, 0.5
+ BackgroundColor3: 0.796079, 0.796079, 0.796079
+ Size: {0.649999976, 0}, {0.699999988, 0} BackgroundTransparency: 0.20000000298023224
+]
+BtnAccept: TextButton 
+ [Position: {1.29999995, 0}, {0.200000003, 0}
+ AnchorPoint: 1, 0.200000003
+ BackgroundColor3: 0.101961, 0.101961, 0.101961
+ Size: {0, 200}, {0, 50} BackgroundTransparency: 0
+]
+BtnClose: TextButton 
+ [Position: {1.29999995, 0}, {0.800000012, 0}
+ AnchorPoint: 1, 0.400000006
+ BackgroundColor3: 0.101961, 0.101961, 0.101961
+ Size: {0, 200}, {0, 50} BackgroundTransparency: 0
+]
+
+--> this code was runned for a local script detecting all proper lol
+--> code
+local gui = script.Parent
+
+for i,v in gui:GetDescendants() do
+	if v:IsA("UICorner") or v:IsA("LocalScript") then
+		continue
+	end
+	
+	print(`{v.Name}: {v.ClassName} \n [Position: {v.Position}\n AnchorPoint: {v.AnchorPoint}\n BackgroundColor3: {v.BackgroundColor3}\n Size: {v.Size} BackgroundTransparency: {v.BackgroundTransparency}\n]`)
+end
